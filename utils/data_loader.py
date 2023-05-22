@@ -4,7 +4,6 @@ import shutil
 import requests
 import gzip
 import glob
-import json
 import pandas as pd
 import numpy as np
 from tqdm.auto import tqdm
