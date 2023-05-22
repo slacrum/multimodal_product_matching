@@ -43,7 +43,9 @@
     ],
     "output_size": 2048
   },
+  "img_model": "MobilenetV3small",
   "mnn_em": {
+    "name": "MNN_EM_ABO",
     "img_conv_layers": 
     [
        1024,
@@ -59,6 +61,12 @@
        512,
        256
     ],
-    "learning_rate": 0.0001
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.0001,
+      "epochs": 100,
+      "batch_size": 16,
+      "validation_split": 0.1
+    }
   }
 }
