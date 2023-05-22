@@ -1,0 +1,46 @@
+{
+  "data": {
+    "alphabet": "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
+    "input_size": 1014,
+    "path": "./datasets/abo"
+  },
+  "char_cnn_zhang": {
+    "conv_layers": [
+      [
+        256,
+        7,
+        3
+      ],
+      [
+        256,
+        7,
+        3
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        3
+      ]
+    ],
+    "fully_connected_layers": [
+      1024,
+      1024
+    ],
+    "output_size": 2048
+  }
+}
