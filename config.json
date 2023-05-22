@@ -42,5 +42,23 @@
       1024
     ],
     "output_size": 2048
+  },
+  "mnn_em": {
+    "img_conv_layers": 
+    [
+       1024,
+       512
+    ],
+    "txt_conv_layers": 
+    [
+       1024,
+       512
+    ],
+    "combined_conv_layers": 
+    [
+       512,
+       256
+    ],
+    "learning_rate": 0.0001
   }
 }

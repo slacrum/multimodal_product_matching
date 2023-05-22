@@ -58,7 +58,7 @@ class CharCNNZhang(object):
         # Output layer
         predictions = Dense(self.output_size, activation='relu')(x)
         # Build and compile model
-        model = Model(inputs=inputs, outputs=predictions)
+        model = Model(inputs=inputs, outputs=predictions, name="Character_Level_CNN")
         self.model = model
-        print("CharCNNZhang model built: ")
-        self.model.summary()
+        # print("CharCNNZhang model built: ")
+        # self.model.summary()
