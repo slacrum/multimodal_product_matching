@@ -6,7 +6,7 @@ from models.char_cnn_zhang import CharCNNZhang
 
 
 class MNNEM(object):
-    def __init__(self, img_input_size, img_conv_layers, txt_input_size, txt_conv_layers, txt_weights, char_cnn_config, combined_conv_layers, learning_rate, loss='binary_crossentropy') -> None:
+    def __init__(self, img_input_size, img_conv_layers, txt_input_size, txt_conv_layers, txt_weights, char_cnn_config, combined_conv_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy') -> None:
         self.img_input_size = img_input_size
         self.img_conv_layers = img_conv_layers
         self.txt_input_size = txt_input_size
@@ -15,6 +15,7 @@ class MNNEM(object):
         self.char_cnn_config = char_cnn_config
         self.combined_conv_layers = combined_conv_layers
         self.learning_rate = learning_rate
+        self.metrics = metrics
         self.loss = loss
         self._build_model()  # builds self.model variable
 
@@ -64,15 +65,8 @@ class MNNEM(object):
 
         optimizer = Adam(learning_rate=self.learning_rate)
 
-        metrics = [
-        Recall(thresholds=0.5, top_k=1, class_id=None, name="recall", dtype=None),
-        Precision(thresholds=0.5, top_k=1, class_id=None, name="precision", dtype=None),
-        BinaryAccuracy(name="binary_accuracy", dtype=None, threshold=0.5),
-        CosineSimilarity(name='cosine_similarity', dtype=None, axis=-1)
-        ]
-
         model.compile(optimizer=optimizer, loss=self.loss,
-                      metrics=metrics)
+                      metrics=self.metrics)
         self.model = model
         # print("MNN-EM model built: ")
         # self.model.summary()
