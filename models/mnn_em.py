@@ -6,13 +6,12 @@ from models.char_cnn_zhang import CharCNNZhang
 
 
 class MNNEM(object):
-    def __init__(self, img_input_size, img_conv_layers, txt_input_size, txt_conv_layers, txt_weights, char_cnn_config, combined_conv_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy') -> None:
+    def __init__(self, img_input_size, txt_input_size, txt_weights, char_cnn_config, conv_layers, combined_conv_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy') -> None:
         self.img_input_size = img_input_size
-        self.img_conv_layers = img_conv_layers
         self.txt_input_size = txt_input_size
-        self.txt_conv_layers = txt_conv_layers
         self.txt_weights = txt_weights
         self.char_cnn_config = char_cnn_config
+        self.conv_layers = conv_layers
         self.combined_conv_layers = combined_conv_layers
         self.learning_rate = learning_rate
         self.metrics = metrics
@@ -24,13 +23,13 @@ class MNNEM(object):
         img_features = Input(shape=(self.img_input_size), name="Image_Input")
 
         # fc + ReLU
-        for i, img_cl in enumerate(self.img_conv_layers[:-1], 1):
-            x = Dense(img_cl, activation='relu',
+        for i, cl in enumerate(self.conv_layers[:-1], 1):
+            x = Dense(cl, activation='relu',
                       name=f"Image_FC_{i}")(img_features if i == 1 else x)
 
         # fc + L2 Norm
         x = Dense(
-            self.img_conv_layers[-1], kernel_regularizer='l2', name="Image_FC_last")(x)
+            self.conv_layers[-1], kernel_regularizer='l2', name="Image_FC_last")(x)
 
         output_img = BatchNormalization(name="Image_Batch_Normalization")(x)
 
@@ -42,13 +41,13 @@ class MNNEM(object):
         x = x.model(text_features)
 
         # fc + ReLU
-        for i, txt_cl in enumerate(self.txt_conv_layers[:-1], 1):
-            x = Dense(txt_cl, activation='relu',
+        for i, cl in enumerate(self.conv_layers[:-1], 1):
+            x = Dense(cl, activation='relu',
                       name=f"Text_FC_{i}")(x)
 
         # fc + L2 Norm
         x = Dense(
-            self.txt_conv_layers[-1], kernel_regularizer='l2', name="Text_FC_last")(x)
+            self.conv_layers[-1], kernel_regularizer='l2', name="Text_FC_last")(x)
 
         output_text = BatchNormalization(name="Text_Batch_Normalization")(x)
 

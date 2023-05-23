@@ -46,12 +46,7 @@
   "img_model": "MobilenetV3small",
   "mnn_em": {
     "name": "MNN_EM_ABO",
-    "img_conv_layers": 
-    [
-       1024,
-       512
-    ],
-    "txt_conv_layers": 
+    "conv_layers": 
     [
        1024,
        512
