@@ -1,5 +1,8 @@
+import numpy as np
 from tensorflow.keras.metrics import Recall, Precision, BinaryAccuracy, CosineSimilarity
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
+from matplotlib import pyplot as plt
+from sklearn.metrics import roc_curve, precision_recall_curve
 
 def create_metrics(metric_list):
     metrics_dict = {
@@ -13,7 +16,7 @@ def create_metrics(metric_list):
             for metric in metric_list
             if metric in metrics_dict]
 
-def create_callbacks(callbacks_list, model_name, img_model_name, optimizer_name, learning_rate, min_delta=0.0001, patience=10):
+def create_callbacks(callbacks_list, model_name, img_model_name, optimizer_name, learning_rate, min_delta=0.0001, patience=3):
     callbacks_dict = {
         "early_stopping": EarlyStopping(
         monitor='val_loss',
@@ -46,3 +49,26 @@ def create_callbacks(callbacks_list, model_name, img_model_name, optimizer_name,
     return [callbacks_dict[callback] 
             for callback in callbacks_list
             if callback in callbacks_dict]
+
+def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, learning_rate):
+    for metric in metrics:
+        plt.plot(history[metric])
+        plt.plot(history[f'val_{metric}'])
+        plt.title(f'{metric} | {model_name} | {img_model_name} | lr: {learning_rate} ({optimizer_name})')
+        plt.ylabel(f'{metric}')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'val'], loc='upper left')
+        plt.show()
+
+def evaluate(model, img_test, text_test, labels_test, model_name, img_model_name, optimizer_name, learning_rate):
+    model.evaluate([img_test, text_test], labels_test, batch_size=1)
+
+    results = model.predict([img_test, text_test])
+    
+    np.save(f'./runs/logs/{model_name}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
+            np.array([
+            roc_curve(labels_test, results),
+            precision_recall_curve(labels_test, results),
+            labels_test,
+            results
+            ], dtype=object))

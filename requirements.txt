@@ -3,5 +3,6 @@ tensorflow-addons
 pandas
 scikit-learn
 scipy
+matplotlib
 tqdm
 Pillow
