@@ -12,7 +12,7 @@ class CharCNNZhang(object):
     as described in Zhang et al., 2015 (http://arxiv.org/abs/1509.01626)
     """
     def __init__(self, input_size, embedding_size,
-                 conv_layers, fully_connected_layers, output_size, embedding_weights):
+                 conv_layers, fc_layers, output_size, embedding_weights):
         """
         Initialization for the Character Level CNN model.
 
@@ -20,13 +20,13 @@ class CharCNNZhang(object):
             input_size (int): Size of input features
             embedding_size (int): Size of embeddings
             conv_layers (list[list[int]]): List of Convolution layers for model
-            fully_connected_layers (list[list[int]]): List of Fully Connected layers for model
+            fc_layers (list[list[int]]): List of Fully Connected layers for model
             output_size (int): Size of output features
         """
         self.input_size = input_size
         self.embedding_size = embedding_size
         self.conv_layers = conv_layers
-        self.fully_connected_layers = fully_connected_layers
+        self.fc_layers = fc_layers
         self.output_size = output_size
         self.embedding_weights = embedding_weights
         self._build_model()  # builds self.model variable
@@ -53,7 +53,7 @@ class CharCNNZhang(object):
                 x = MaxPooling1D(cl[2])(x)
         x = Flatten()(x)
         # Fully connected layers
-        for fl in self.fully_connected_layers:
+        for fl in self.fc_layers:
             x = Dense(fl, activation='relu')(x)
         # Output layer
         predictions = Dense(self.output_size, activation='relu')(x)

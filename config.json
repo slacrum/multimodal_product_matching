@@ -37,7 +37,7 @@
         3
       ]
     ],
-    "fully_connected_layers": [
+    "fc_layers": [
       1024,
       1024
     ],
@@ -46,12 +46,12 @@
   "img_model": "MobilenetV3small",
   "mnn_em": {
     "name": "MNN_EM_ABO",
-    "conv_layers": 
+    "fc_layers": 
     [
        1024,
        512
     ],
-    "combined_conv_layers": 
+    "combined_fc_layers": 
     [
        512,
        256
