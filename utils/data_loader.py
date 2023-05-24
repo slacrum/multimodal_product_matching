@@ -44,7 +44,7 @@ def preprocess_data(path, alt_augment=True, random_deletion=True):
         images_meta = pd.read_csv(f)
 
     print("Loading texts...")
-    if not os.path.exists(os.path.join(path, "listings/listings.csv")):
+    if not (os.path.exists(os.path.join(path, "listings/listings.csv.gz")) or os.path.exists(os.path.join(path, "listings/listings.csv"))):
         print("Merging listings... (this may take a while)")
         json_pattern = os.path.join(path,'listings/metadata/listings_*.json.gz')
         file_list = glob.glob(json_pattern)
@@ -76,8 +76,13 @@ def preprocess_data(path, alt_augment=True, random_deletion=True):
         dfs_2.reset_index(drop=True, inplace=True)
         dfs_2.to_csv(os.path.join(path, "listings/listings.csv"))
 
-    print("Found listings.csv, using that instead.")
-    dfs = pd.read_csv(os.path.join(path, "listings/listings.csv"))
+    print("Importing listings CSV...")
+    if os.path.exists(os.path.join(path, "listings/listings.csv.gz")):
+        with gzip.open(os.path.join(path, "listings/listings.csv.gz")) as f:
+            dfs = pd.read_csv(f, dtype=object)
+    elif os.path.exists(os.path.join(path, "listings/listings.csv")):
+        dfs = pd.read_csv(os.path.join(path, "listings/listings.csv"), dtype=object)
+
     dfs = dfs.drop(['Unnamed: 0'], axis=1)
 
     if alt_augment:
