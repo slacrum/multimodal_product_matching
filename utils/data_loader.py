@@ -6,7 +6,7 @@ import gzip
 import glob
 import pandas as pd
 import numpy as np
-from tqdm.auto import tqdm
+from tqdm import tqdm
 from ast import literal_eval
 
 def download_abo(path):
