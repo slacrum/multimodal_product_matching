@@ -51,6 +51,7 @@ def create_callbacks(callbacks_list, model_name, img_model_name, optimizer_name,
             if callback in callbacks_dict]
 
 def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, learning_rate, cls):
+    metrics = ["loss"] + metrics
     for metric in metrics:
         plt.plot(history[metric])
         plt.plot(history[f'val_{metric}'])
