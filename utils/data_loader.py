@@ -133,7 +133,8 @@ def preprocess_data(path, alt_augment=True, random_deletion=True):
     print("Concatenating attributes into description columns...")
     dataset_final["description"] = dataset_final["item_keywords.value"] + dataset_final["item_id"] + dataset_final["item_name.value"]
     dataset_final["description2"] = dataset_final["item_keywords.value2"] + dataset_final["item_id2"] + dataset_final["item_name.value2"]
-    dataset_final = dataset_final[["description", "description2", "path", "label", "product_type.value"]]
+    dataset_final['product_type'] = dataset_final['product_type.value']
+    dataset_final = dataset_final[["description", "description2", "path", "label", "product_type"]]
 
     print("Finishing up...")
     dataset_final = dataset_final.drop(np.where((dataset_final['description'] == '') | (dataset_final['description2'] == ''))[0])
