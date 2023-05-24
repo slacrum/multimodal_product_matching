@@ -2,6 +2,7 @@
   "data": {
     "alphabet": "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
     "input_size": 1014,
+    "cls": 1,
     "path": "./datasets/abo"
   },
   "char_cnn_zhang": {
@@ -61,6 +62,7 @@
       "learning_rate": 0.0001,
       "epochs": 10,
       "batch_size": 16,
+      "test_split": 0.1,
       "validation_split": 0.1,
       "metrics": ["recall", "precision", "binary_accuracy", "cosine_similarity"],
       "callbacks": ["early_stopping", "model_checkpoint", "tensorboard"]
