@@ -20,13 +20,13 @@ def load_img_model(name):
         raise ValueError("Invalid model name: {}".format(name))
 
 
-def create_embeddings_from(img_model, img, path):
+def create_embeddings_from(img_model, img, path, batch_size=2048):
     datagenerator = ImageDataGenerator()
 
     img = datagenerator.flow_from_dataframe(
         dataframe=img, directory=path, x_col='path', y_col=None,
         weight_col=None, target_size=(256, 256), color_mode='rgb',
-        classes=None, class_mode="input", batch_size=1, shuffle=False,
+        classes=None, class_mode="input", batch_size=batch_size, shuffle=False,
         seed=None, save_to_dir=None, save_prefix='',
         save_format='jpg', subset=None, interpolation='nearest',
         validate_filenames=True
