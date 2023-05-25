@@ -3,7 +3,7 @@ from tensorflow.keras.applications import MobileNetV3Large, MobileNetV3Small
 from tensorflow.keras.applications.resnet import ResNet152
 from tensorflow.keras.applications.vgg19 import VGG19
 
-def load(name):
+def load_img_model(name):
     model_dict = {
         "MobilenetV3large": MobileNetV3Large,
         "MobilenetV3small": MobileNetV3Small,
