@@ -7,11 +7,13 @@ import numpy as np
 from tqdm import tqdm
 
 class Dataset:
-    def __init__(self, path, urls, extract, random_deletion, export_csv):
+    def __init__(self, path, urls, download, extract, preprocess, random_deletion, export_csv):
         self.path = path
-        self.urls = urls
-        self._download_dataset(extract=extract)
-        self._preprocess_data(random_deletion=random_deletion, export_csv=export_csv)
+        if download:
+            self.urls = urls
+            self._download_dataset(extract=extract)
+        if preprocess:
+            self._preprocess_data(random_deletion=random_deletion, export_csv=export_csv)
 
     def _download_dataset(self, extract=True):
         os.makedirs(self.path, exist_ok=True)

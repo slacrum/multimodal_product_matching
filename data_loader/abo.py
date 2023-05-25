@@ -14,9 +14,9 @@ class ABO(Dataset):
     def __init__(self, path, urls=[
         "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-listings.tar", 
         "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-images-small.tar"
-        ], extract=True, alt_augment=False, random_deletion=True, export_csv=True):
+        ], download=True, extract=True, preprocess=True, alt_augment=False, random_deletion=True, export_csv=True):
         self.alt_augment = alt_augment
-        super().__init__(path, urls, extract, random_deletion, export_csv)
+        super().__init__(path, urls, download, extract, preprocess, random_deletion, export_csv)
 
     def _load_imgs(self):
         with gzip.open(os.path.join(self.path,'images/metadata/images.csv.gz')) as f:
