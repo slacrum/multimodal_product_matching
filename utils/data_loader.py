@@ -140,8 +140,10 @@ def preprocess_data(path, alt_augment=True, random_deletion=True):
     dataset_final = dataset_final.drop(np.where((dataset_final['description'] == '') | (dataset_final['description2'] == ''))[0])
     dataset_final["description"] = dataset_final["description"].str.lower()
     dataset_final["description2"] = dataset_final["description2"].str.lower()
-    dataset_final["description"] = dataset_final['description'].str.replace(r'[^\x00-\x7F]+', '')
-    dataset_final["description2"] = dataset_final['description2'].str.replace(r'[^\x00-\x7F]+', '')
+    dataset_final["description"] = dataset_final['description'].str.replace(r'[^\x00-\x7F]+', '', regex=True)
+    dataset_final["description2"] = dataset_final['description2'].str.replace(r'[^\x00-\x7F]+', '', regex=True)
+    dataset_final = dataset_final.dropna()
+    dataset_final = dataset_final.reset_index(drop=True)
 
     print("Exporting to CSV...")
     dataset_final.to_csv(os.path.join(path, "data.csv"))
