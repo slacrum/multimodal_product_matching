@@ -107,7 +107,6 @@ class ExtendedMNNEM(object):
         self._build_model()  # builds self.model variable
 
     def _build_model(self):
-        print(self.char_cnn)
         head = MNNEMHead(**self.head_1_config, char_cnn=self.char_cnn)
 
         tail = MNNEM(
