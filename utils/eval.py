@@ -61,10 +61,10 @@ def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, l
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
 
-def evaluate(model, img_test, text_test, labels_test, model_name, img_model_name, optimizer_name, learning_rate, cls):
-    model.evaluate([img_test, text_test], labels_test, batch_size=1)
+def evaluate(model, x, labels_test, model_name, img_model_name, optimizer_name, learning_rate, cls):
+    model.evaluate(x, labels_test, batch_size=1)
 
-    results = model.predict([img_test, text_test])
+    results = model.predict(x)
     
     np.save(f'./runs/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
             np.array([
