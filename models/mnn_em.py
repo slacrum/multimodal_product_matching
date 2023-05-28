@@ -44,10 +44,9 @@ class MNNEM(object):
         # self.model.summary()
 
 class MNNEMHead(object):
-    def __init__(self, img_input_size, txt_input_size, txt_weights, img_fc_layers, txt_fc_layers, extended, char_cnn):
+    def __init__(self, img_input_size, txt_input_size, img_fc_layers, txt_fc_layers, extended, char_cnn):
         self.img_input_size = img_input_size
         self.txt_input_size = txt_input_size
-        self.txt_weights = txt_weights
         self.img_fc_layers = img_fc_layers
         self.txt_fc_layers = txt_fc_layers
         self.extended = extended
