@@ -6,13 +6,14 @@ from models.char_cnn_zhang import CharCNNZhang
 
 
 class MNNEM(object):
-    def __init__(self, head_config, char_cnn, combined_fc_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy') -> None:
+    def __init__(self, head_config, char_cnn, combined_fc_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy', name="MNN_EM") -> None:
         self.head_config = head_config
         self.char_cnn = char_cnn
         self.combined_fc_layers = combined_fc_layers
         self.learning_rate = learning_rate
         self.metrics = metrics
         self.loss = loss
+        self.name = name
         self._build_model()  # builds self.model variable
 
     def _build_model(self):
@@ -32,7 +33,7 @@ class MNNEM(object):
                              name=f"Combined_FC_{i}")(x)
 
         output = Dense(1, activation='sigmoid', name="Sigmoid")(x)
-        model = Model(inputs=[img_features, text_features], outputs=output)
+        model = Model(inputs=[img_features, text_features], outputs=output, name=self.name)
 
         optimizer = Adam(learning_rate=self.learning_rate)
 
@@ -114,7 +115,8 @@ class ExtendedMNNEM(object):
             char_cnn=self.char_cnn,
             combined_fc_layers=self.combined_fc_layers,
             learning_rate=self.learning_rate,
-            metrics=self.metrics)
+            metrics=self.metrics,
+            name="MNN_EM_Tail")
 
         # Input Layer
         img_features = Input(shape=(self.head_1_config["img_input_size"]), name="Image_Input")
