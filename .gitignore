@@ -11,4 +11,4 @@ profile_default/
 ipython_config.py
 
 datasets/
-runs/models
+**/runs/models

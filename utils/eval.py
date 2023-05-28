@@ -16,7 +16,7 @@ def create_metrics(metric_list):
             for metric in metric_list
             if metric in metrics_dict]
 
-def create_callbacks(callbacks_list, model_name, img_model_name, optimizer_name, learning_rate, cls, min_delta=0.0001, patience=3):
+def create_callbacks(callbacks_list, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls, min_delta=0.0001, patience=3):
     callbacks_dict = {
         "early_stopping": EarlyStopping(
         monitor='val_loss',
@@ -28,13 +28,13 @@ def create_callbacks(callbacks_list, model_name, img_model_name, optimizer_name,
         restore_best_weights=False
         ),
         "model_checkpoint": ModelCheckpoint(
-        f"./runs/models/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}",
+        f"{log_dir}/models/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}",
         monitor='val_loss',
         save_best_only=True,
         mode='min'
         ),
         "tensorboard": TensorBoard(
-        log_dir=f'./runs/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}',
+        log_dir=f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}',
         histogram_freq=0,
         write_graph=True,
         write_images=False,
@@ -61,12 +61,12 @@ def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, l
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
 
-def evaluate(model, x, labels_test, model_name, img_model_name, optimizer_name, learning_rate, cls):
+def evaluate(model, x, labels_test, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls):
     model.evaluate(x, labels_test, batch_size=1)
 
     results = model.predict(x)
     
-    np.save(f'./runs/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
+    np.save(f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
             np.array([
             roc_curve(labels_test, results),
             precision_recall_curve(labels_test, results),

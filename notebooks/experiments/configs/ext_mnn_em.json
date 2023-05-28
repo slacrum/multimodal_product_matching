@@ -77,7 +77,8 @@
       "test_split": 0.1,
       "validation_split": 0.1,
       "metrics": ["recall", "precision", "binary_accuracy", "cosine_similarity"],
-      "callbacks": ["early_stopping", "model_checkpoint", "tensorboard"]
+      "callbacks": ["early_stopping", "model_checkpoint", "tensorboard"],
+      "log_dir": "./runs"
     }
   }
 }
