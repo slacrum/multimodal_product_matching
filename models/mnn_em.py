@@ -23,7 +23,7 @@ class MNNEM(object):
         # Input Layer
         text_features = Input(shape=(self.head_config["txt_input_size"]), name="Text_Input")
 
-        x = MNNEMHead(**self.head_config, char_cnn=self.char_cnn)
+        x = _MNNEMHead(**self.head_config, char_cnn=self.char_cnn)
 
         x = x.model([img_features, text_features])
 
@@ -43,7 +43,7 @@ class MNNEM(object):
         # print("MNN-EM model built: ")
         # self.model.summary()
 
-class MNNEMHead(object):
+class _MNNEMHead(object):
     def __init__(self, img_input_size, txt_input_size, img_fc_layers, txt_fc_layers, extended, char_cnn):
         self.img_input_size = img_input_size
         self.txt_input_size = txt_input_size
@@ -57,7 +57,7 @@ class MNNEMHead(object):
         # Text Input
         img_features = Input(shape=(self.img_input_size), name="Image_Input_Head_Outer")
 
-        img_cnn = CNNBranch(self.img_input_size, self.img_fc_layers, self.extended, name="Image")
+        img_cnn = _CNNBranch(self.img_input_size, self.img_fc_layers, self.extended, name="Image")
 
         output_img = img_cnn.model(img_features)
 
@@ -67,7 +67,7 @@ class MNNEMHead(object):
     
         x = self.char_cnn(text_features)
 
-        text_branch = CNNBranch(x.shape[1], self.txt_fc_layers, self.extended, name="Text")
+        text_branch = _CNNBranch(x.shape[1], self.txt_fc_layers, self.extended, name="Text")
 
         output_text_branch = text_branch.model(x)
 
@@ -83,7 +83,7 @@ class MNNEMHead(object):
 
         self.model = model
 
-class CNNBranch(object):
+class _CNNBranch(object):
     def __init__(self, input_size, fc_layers, extended, name):
         self.input_size = input_size
         self.fc_layers = fc_layers
@@ -124,7 +124,7 @@ class ExtendedMNNEM(object):
         self._build_model()  # builds self.model variable
 
     def _build_model(self):
-        head = MNNEMHead(**self.head_1_config, char_cnn=self.char_cnn)
+        head = _MNNEMHead(**self.head_1_config, char_cnn=self.char_cnn)
 
         tail = MNNEM(
             head_config=self.head_2_config,
