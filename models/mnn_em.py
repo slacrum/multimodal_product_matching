@@ -54,38 +54,26 @@ class MNNEMHead(object):
         self._build_model()  # builds self.model variable
 
     def _build_model(self):
-        # Input Layer
-        img_features = Input(shape=(self.img_input_size), name="Image_Input_Head")
+        # Text Input
+        img_features = Input(shape=(self.img_input_size), name="Image_Input_Head_Outer")
 
-        # fc + ReLU
-        for i, fl in enumerate(self.img_fc_layers[:None if self.extended else -1], 1):
-            x = Dense(fl, activation='relu',
-                      name=f"Image_FC_{i}")(img_features if i == 1 else x)
-            
-        if not self.extended:
-            # fc + L2 Norm
-            x = Dense(
-                self.img_fc_layers[-1], kernel_regularizer='l2', name="Image_FC_last")(img_features if len(self.img_fc_layers) == 1 else x)
+        img_cnn = CNNBranch(self.img_input_size, self.img_fc_layers, self.extended, name="Image")
 
-        output_img = BatchNormalization(name="Image_Batch_Normalization")(x)
+        output_img = img_cnn.model(img_features)
 
 
-        # Input Layer
-        text_features = Input(shape=(self.txt_input_size), name="Text_Input_Head")
+        # Image Input
+        text_features = Input(shape=(self.txt_input_size), name="Text_Input_Head_Outer")
     
         x = self.char_cnn(text_features)
 
-        # fc + ReLU
-        for i, fl in enumerate(self.txt_fc_layers[:None if self.extended else -1], 1):
-            x = Dense(fl, activation='relu',
-                      name=f"Text_FC_{i}")(x)
+        text_branch = CNNBranch(x.shape[1], self.txt_fc_layers, self.extended, name="Text")
 
-        if not self.extended:
-            # fc + L2 Norm
-            x = Dense(
-                self.txt_fc_layers[-1], kernel_regularizer='l2', name="Text_FC_last")(text_features if len(self.txt_fc_layers) == 1 else x)
+        output_text_branch = text_branch.model(x)
 
-        output_text = BatchNormalization(name="Text_Batch_Normalization")(x)
+        text_cnn = Model(inputs=text_features, outputs=output_text_branch, name="Text_CNN")
+
+        output_text = text_cnn(text_features)
 
         # Element-wise product
         combined = Multiply(
@@ -94,6 +82,35 @@ class MNNEMHead(object):
         model = Model(inputs=[img_features, text_features], outputs=combined, name="MNN_EM_Head")
 
         self.model = model
+
+class CNNBranch(object):
+    def __init__(self, input_size, fc_layers, extended, name):
+        self.input_size = input_size
+        self.fc_layers = fc_layers
+        self.extended = extended
+        self.name = name
+        self._build_model()  # builds self.model variable
+
+    def _build_model(self):
+        # Input Layer
+        features = Input(shape=(self.input_size), name=f"{self.name}_Input_Head_Inner")
+
+        # fc + ReLU
+        for i, fl in enumerate(self.fc_layers[:None if self.extended else -1], 1):
+            x = Dense(fl, activation='relu',
+                      name=f"{self.name}_FC_{i}")(features if i == 1 else x)
+            
+        if not self.extended:
+            # fc + L2 Norm
+            x = Dense(
+                self.fc_layers[-1], kernel_regularizer='l2', name=f"{self.name}_FC_last")(features if len(self.fc_layers) == 1 else x)
+
+        output = BatchNormalization(name=f"{self.name}_Batch_Normalization")(x)
+
+        model = Model(inputs=features, outputs=output, name=f"{self.name}_CNN")
+
+        self.model = model
+
 
 class ExtendedMNNEM(object):
     def __init__(self, head_1_config, head_2_config, char_cnn, combined_fc_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy') -> None:
