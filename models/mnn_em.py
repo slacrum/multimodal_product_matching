@@ -56,7 +56,7 @@ class MNNEMHead(object):
 
     def _build_model(self):
         # Input Layer
-        img_features = Input(shape=(self.img_input_size))
+        img_features = Input(shape=(self.img_input_size), name="Image_Input_Head")
 
         # fc + ReLU
         for i, fl in enumerate(self.img_fc_layers[:None if self.extended else -1], 1):
@@ -72,7 +72,7 @@ class MNNEMHead(object):
 
 
         # Input Layer
-        text_features = Input(shape=(self.txt_input_size))
+        text_features = Input(shape=(self.txt_input_size), name="Text_Input_Head")
     
         x = self.char_cnn(text_features)
 
