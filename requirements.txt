@@ -1,5 +1,4 @@
 tensorflow == 2.8.*
-tensorflow-addons
 pandas
 scikit-learn
 scipy
