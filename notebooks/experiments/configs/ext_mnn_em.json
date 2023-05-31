@@ -45,7 +45,7 @@
     "output_size": 2048
   },
   "img_model": "MobilenetV3small",
-  "ext_mnn_em": {
+  "model": {
     "name": "Extended_MNN_EM_ABO",
     "img_1_fc_layers": 
     [
