@@ -21,10 +21,11 @@ This is the code implementation of "Similarity Learning of Product Descriptions 
     ├──notebooks                        # Jupyter notebooks
     │  ├──experiments                   # Experiments (from downloading, preprocessing up to training and evaluation)
     |  |  ├──configs                    # JSON configs for data (path, alphabet size), models (layer shapes) and training (hyperparams, callbacks, metrics)
-    |  |  ├──runs                       # default location for experiment outputs
     |  |  ├──mnn_em.ipynb               # MNN-EM experiments
     |  |  └──extended_mnn_em.ipynb      # Extended MNN-EM experiments
     |  └──data_preparation.ipynb        # "Hands-on" ABO Data preparation, covering every processing step handled by the Data Loader
+    |
+    ├──runs                             # default location for experiment outputs
     |
     ├──utils                            # Utilities and convenience functions
     │  ├──eval.py                       # Evaluation-related functions (generate callbacks, plot and save metrics,...)
