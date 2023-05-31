@@ -21,7 +21,7 @@ This is the code implementation of "Similarity Learning of Product Descriptions 
     ├──notebooks                        # Jupyter notebooks
     │  ├──experiments                   # Experiments (from downloading, preprocessing up to training and evaluation)
     |  |  ├──configs                    # JSON configs for data (path, alphabet size), models (layer shapes) and training (hyperparams, callbacks, metrics)
-    |  |  ├──mnn_em.ipynb               # MNN-EM experiments
+    |  |  ├──mnn_em.ipynb               # MNN-EM (Multimodal Neural Network with Element-wise Multiplication) experiments
     |  |  └──extended_mnn_em.ipynb      # Extended MNN-EM experiments
     |  ├──data_preparation.ipynb        # "Hands-on" ABO Data preparation, covering every processing step handled by the Data Loader
     |  └──visualize_results.ipynb       # Visualize "advanced" metrics, such as ROC and Precision-Recall curve and threshold optimization
@@ -46,6 +46,6 @@ pip install -r requirements.txt
 In general, all the notebooks provided are standalone and may be run separately. However, we still recommend the following order:
 1. [Data Preparation](./notebooks/data_preparation.ipynb), to gain understanding of the ABO data and necessary processing
 2. Experiments for running our ML pipeline:
-    1. [Base MNN-EM](./notebooks/experiments/mnn_em.ipynb)
+    1. [Base MNN-EM](./notebooks/experiments/mnn_em.ipynb) (Multimodal Neural Network with Element-wise Multiplication)
     2. [Extended MNN-EM](./notebooks/experiments/extended_mnn_em.ipynb)
 3. [Visualizing results](./notebooks/visualize_results.ipynb), such as ROC curve, Precision Recall curve and perform threshold optimization
