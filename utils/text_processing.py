@@ -2,9 +2,11 @@ import numpy as np
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+
 class CharTokenizer(Tokenizer):
     def __init__(self, alphabet, num_words=None, char_level=True, oov_token='UNK'):
-        super(CharTokenizer, self).__init__(num_words=num_words, char_level=char_level, oov_token=oov_token)
+        super(CharTokenizer, self).__init__(num_words=num_words,
+                                            char_level=char_level, oov_token=oov_token)
         # construct a new vocabulary
         self.alphabet = alphabet
         self.char_dict = {}

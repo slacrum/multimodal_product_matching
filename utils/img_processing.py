@@ -3,6 +3,7 @@ from tensorflow.keras.applications import MobileNetV3Large, MobileNetV3Small
 from tensorflow.keras.applications.resnet import ResNet152
 from tensorflow.keras.applications.vgg19 import VGG19
 
+
 def load_img_model(name):
     model_dict = {
         "MobilenetV3large": MobileNetV3Large,
@@ -30,6 +31,6 @@ def create_embeddings_from(img_model, img, path, batch_size=2048):
         seed=None, save_to_dir=None, save_prefix='',
         save_format='jpg', subset=None, interpolation='nearest',
         validate_filenames=True
-        )
+    )
 
     return img_model.predict(img)

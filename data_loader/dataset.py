@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
+
 class Dataset:
     def __init__(self, path, urls, download, extract, preprocess, random_deletion, export_csv):
         self.path = path
@@ -13,7 +14,8 @@ class Dataset:
             self.urls = urls
             self._download_dataset(extract=extract)
         if preprocess:
-            self._preprocess_data(random_deletion=random_deletion, export_csv=export_csv)
+            self._preprocess_data(
+                random_deletion=random_deletion, export_csv=export_csv)
 
     def _download_dataset(self, extract=True):
         os.makedirs(self.path, exist_ok=True)
@@ -32,7 +34,6 @@ class Dataset:
                     with tarfile.open(os.path.join(self.path, file)) as f:
                         f.extractall(self.path)
 
-
     def _download(self, url, dest):
         with requests.get(url, allow_redirects=True, stream=True) as r:
             # check header to get content length, in bytes
@@ -50,7 +51,8 @@ class Dataset:
         print("Loading texts...")
         txts = self._load_txts()
 
-        ground_truth = txts.merge(imgs, left_on=txts.columns[-1], right_on=imgs.columns[0])
+        ground_truth = txts.merge(
+            imgs, left_on=txts.columns[-1], right_on=imgs.columns[0])
         for col in txts.columns[:-2]:
             ground_truth[col + "2"] = ground_truth[col]
         ground_truth["label"] = 1
@@ -68,22 +70,29 @@ class Dataset:
             print("Performing random deletion...")
             for col in txts.columns[:-2]:
                 dataset_final[col] = dataset_final[col].sample(frac=.5)
-                dataset_final[col + "2"] = dataset_final[col + "2"].sample(frac=.5)
+                dataset_final[col + "2"] = dataset_final[col +
+                                                         "2"].sample(frac=.5)
             dataset_final = dataset_final.fillna("")
         else:
             dataset_final = dataset_final.dropna()
 
         print("Concatenating attributes into description columns...")
-        dataset_final["description"] = dataset_final[txts.columns[:-2]].apply("".join, axis=1)
-        dataset_final["description2"] = dataset_final[txts.columns[:-2] + "2"].apply("".join, axis=1)
-        dataset_final = dataset_final[["description", "description2", "path", "label", "product_type"]]
+        dataset_final["description"] = dataset_final[txts.columns[:-2]
+                                                     ].apply("".join, axis=1)
+        dataset_final["description2"] = dataset_final[txts.columns[:-
+                                                                   2] + "2"].apply("".join, axis=1)
+        dataset_final = dataset_final[[
+            "description", "description2", "path", "label", "product_type"]]
 
         print("Finishing up...")
-        dataset_final = dataset_final.drop(np.where((dataset_final['description'] == '') | (dataset_final['description2'] == ''))[0])
+        dataset_final = dataset_final.drop(np.where(
+            (dataset_final['description'] == '') | (dataset_final['description2'] == ''))[0])
         dataset_final["description"] = dataset_final["description"].str.lower()
         dataset_final["description2"] = dataset_final["description2"].str.lower()
-        dataset_final["description"] = dataset_final['description'].str.replace(r'[^\x00-\x7F]+', '', regex=True)
-        dataset_final["description2"] = dataset_final['description2'].str.replace(r'[^\x00-\x7F]+', '', regex=True)
+        dataset_final["description"] = dataset_final['description'].str.replace(
+            r'[^\x00-\x7F]+', '', regex=True)
+        dataset_final["description2"] = dataset_final['description2'].str.replace(
+            r'[^\x00-\x7F]+', '', regex=True)
         dataset_final = dataset_final.dropna()
         dataset_final = dataset_final.reset_index(drop=True)
 

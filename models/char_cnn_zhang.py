@@ -11,6 +11,7 @@ class CharCNNZhang(object):
     Class to implement the Character Level Convolutional Neural Network for Text Classification,
     as described in Zhang et al., 2015 (http://arxiv.org/abs/1509.01626)
     """
+
     def __init__(self, input_size, embedding_size,
                  conv_layers, fc_layers, output_size, embedding_weights):
         """
@@ -39,7 +40,8 @@ class CharCNNZhang(object):
 
         """
         # Input layer
-        inputs = Input(shape=(self.input_size,), name='sent_input', dtype='int64')
+        inputs = Input(shape=(self.input_size,),
+                       name='sent_input', dtype='int64')
         # Embedding layers
         x = Embedding(self.embedding_size + 1,
                       self.embedding_size,
@@ -58,7 +60,8 @@ class CharCNNZhang(object):
         # Output layer
         predictions = Dense(self.output_size, activation='relu')(x)
         # Build and compile model
-        model = Model(inputs=inputs, outputs=predictions, name="Character_Level_CNN")
+        model = Model(inputs=inputs, outputs=predictions,
+                      name="Character_Level_CNN")
         self.model = model
         # print("CharCNNZhang model built: ")
         # self.model.summary()

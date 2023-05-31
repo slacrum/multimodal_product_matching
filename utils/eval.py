@@ -5,6 +5,7 @@ from tensorflow import reduce_mean
 from matplotlib import pyplot as plt
 from sklearn.metrics import roc_curve, auc, precision_recall_curve
 
+
 def create_metrics(metric_list):
     metrics_dict = {
         "recall": Recall(thresholds=0.5, top_k=1, class_id=None, name="recall", dtype=None),
@@ -13,67 +14,72 @@ def create_metrics(metric_list):
         "cosine_similarity": CosineSimilarity(name='cosine_similarity', dtype=None, axis=-1)
     }
 
-    return [metrics_dict[metric] 
+    return [metrics_dict[metric]
             for metric in metric_list
             if metric in metrics_dict]
+
 
 def create_callbacks(callbacks_list, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls, min_delta=0.0001, patience=3):
     callbacks_dict = {
         "early_stopping": EarlyStopping(
-        monitor='val_loss',
-        min_delta=min_delta,
-        patience=patience,
-        verbose=0,
-        mode='auto',
-        baseline=None,
-        restore_best_weights=False
+            monitor='val_loss',
+            min_delta=min_delta,
+            patience=patience,
+            verbose=0,
+            mode='auto',
+            baseline=None,
+            restore_best_weights=False
         ),
         "model_checkpoint": ModelCheckpoint(
-        f"{log_dir}/models/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}",
-        monitor='val_loss',
-        save_best_only=True,
-        mode='min'
+            f"{log_dir}/models/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}",
+            monitor='val_loss',
+            save_best_only=True,
+            mode='min'
         ),
         "tensorboard": TensorBoard(
-        log_dir=f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}',
-        histogram_freq=0,
-        write_graph=True,
-        write_images=False,
-        write_steps_per_second=False,
-        update_freq='epoch',
-        profile_batch=0,
-        embeddings_freq=0,
-        embeddings_metadata=None,
+            log_dir=f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}',
+            histogram_freq=0,
+            write_graph=True,
+            write_images=False,
+            write_steps_per_second=False,
+            update_freq='epoch',
+            profile_batch=0,
+            embeddings_freq=0,
+            embeddings_metadata=None,
         )
     }
 
-    return [callbacks_dict[callback] 
+    return [callbacks_dict[callback]
             for callback in callbacks_list
             if callback in callbacks_dict]
+
 
 def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, learning_rate, cls):
     metrics = ["loss"] + metrics
     for metric in metrics:
         plt.plot(history[metric])
         plt.plot(history[f'val_{metric}'])
-        plt.title(f'{metric} | {model_name} | {img_model_name} | lr: {learning_rate} ({optimizer_name}) | cls > {cls}')
+        plt.title(
+            f'{metric} | {model_name} | {img_model_name} | lr: {learning_rate} ({optimizer_name}) | cls > {cls}')
         plt.ylabel(f'{metric}')
         plt.xlabel('epoch')
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
 
+
 def evaluate(model, x, labels_test, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls):
     model.evaluate(x, labels_test, batch_size=1)
 
     results = model.predict(x)
-    
+
     np.save(f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
             np.array([
-            roc_curve(labels_test, results),
-            precision_recall_curve(labels_test, results),
-            labels_test,
-            results
+                roc_curve(labels_test, results),
+                precision_recall_curve(labels_test, results),
+                labels_test,
+                results
             ], dtype=object))
+
 
 def extract_metrics_config(config):
     return {
@@ -84,6 +90,7 @@ def extract_metrics_config(config):
         "learning_rate": config["model"]["training"]["learning_rate"],
         "cls": config["data"]["cls"]
     }
+
 
 class Metric(object):
     def __init__(self, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls):
@@ -101,10 +108,11 @@ class Metric(object):
         self.metrics = metrics
 
     def plot_roc(self):
-        roc = plt.plot( 
+        roc = plt.plot(
             self.metrics[0][0],
             self.metrics[0][1],
-            label="%s | %s | lr: %s (%s) | cls > %s (AUC = %0.3f)" % (self.model_name, self.img_model_name, self.learning_rate, self.optimizer_name, self.cls, auc(self.metrics[0][0], self.metrics[0][1]))
+            label="%s | %s | lr: %s (%s) | cls > %s (AUC = %0.3f)" % (self.model_name, self.img_model_name,
+                                                                      self.learning_rate, self.optimizer_name, self.cls, auc(self.metrics[0][0], self.metrics[0][1]))
         )
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.xlabel("False Positive Rate (FPR)")
@@ -112,10 +120,11 @@ class Metric(object):
         return roc
 
     def plot_prc(self):
-        prc = plt.plot( 
+        prc = plt.plot(
             self.metrics[1][1],
             self.metrics[1][0],
-            label="%s | %s | lr: %s (%s) | cls > %s (AP = %0.3f)" % (self.model_name, self.img_model_name, self.learning_rate, self.optimizer_name, self.cls, auc(self.metrics[1][1], self.metrics[1][0]))
+            label="%s | %s | lr: %s (%s) | cls > %s (AP = %0.3f)" % (self.model_name, self.img_model_name,
+                                                                     self.learning_rate, self.optimizer_name, self.cls, auc(self.metrics[1][1], self.metrics[1][0]))
         )
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.xlabel("Recall")
@@ -134,30 +143,33 @@ class Metric(object):
         precision, recall = self.metrics[1][0], self.metrics[1][1]
         numerator = (2 * precision * recall)
         denom = (precision + recall)
-        fscores = np.divide(numerator, denom, out=np.zeros_like(denom), where=(denom!=0)) #sometimes precision and recall is 0, therefore denom is 0, so we get NaN values. np.divide() can prevent that
+        # sometimes precision and recall is 0, therefore denom is 0, so we get NaN values. np.divide() can prevent that
+        fscores = np.divide(numerator, denom, out=np.zeros_like(
+            denom), where=(denom != 0))
         return fscores
 
     def _accuracy(self, mode):
         roc, prc, y_true, y_pred = self.metrics
-        if mode=="gmean":
+        if mode == "gmean":
             metric = self._gmean()
             threshold = roc[2][np.argmax(metric)]
-        elif mode=="J":
+        elif mode == "J":
             metric = self._J()
             threshold = roc[2][np.argmax(metric)]
-        elif mode=="fscore":
+        elif mode == "fscore":
             metric = self._fscore()
             threshold = prc[2][np.argmax(metric)]
         return metric.max(), threshold, reduce_mean(
-                binary_accuracy(
-                    y_true[["label"]], y_pred, threshold=threshold
-                )
-            ).numpy()
+            binary_accuracy(
+                y_true[["label"]], y_pred, threshold=threshold
+            )
+        ).numpy()
 
     def optimize_threshold(self):
         gmean, threshold_gmean, acc_gmean = self._accuracy("gmean")
         J, threshold_J, acc_J = self._accuracy("J")
-        precision, recall = self.metrics[1][0][np.argmax(self._fscore())], self.metrics[1][1][np.argmax(self._fscore())]
+        precision, recall = self.metrics[1][0][np.argmax(
+            self._fscore())], self.metrics[1][1][np.argmax(self._fscore())]
         fscore_best, threshold_fscore, acc_fscore = self._accuracy("fscore")
         return {'Model name': self.model_name,
                 'Image CNN': self.img_model_name,
@@ -177,4 +189,4 @@ class Metric(object):
                 'F-Score': fscore_best,
                 'Threshold F-Score': threshold_fscore,
                 'Accuracy F-Score': acc_fscore
-            }
+                }

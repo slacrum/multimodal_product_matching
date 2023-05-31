@@ -18,10 +18,12 @@ class MNNEM(object):
 
     def _build_model(self):
         # Input Layer
-        img_features = Input(shape=(self.head_config["img_input_size"]), name="Image_Input")
+        img_features = Input(
+            shape=(self.head_config["img_input_size"]), name="Image_Input")
 
         # Input Layer
-        text_features = Input(shape=(self.head_config["txt_input_size"]), name="Text_Input")
+        text_features = Input(
+            shape=(self.head_config["txt_input_size"]), name="Text_Input")
 
         x = _MNNEMHead(**self.head_config, char_cnn=self.char_cnn)
 
@@ -30,10 +32,11 @@ class MNNEM(object):
         # FC Layers
         for i, comb_fl in enumerate(self.combined_fc_layers, 1):
             x = Dense(comb_fl, activation='relu',
-                             name=f"Combined_FC_{i}")(x)
+                      name=f"Combined_FC_{i}")(x)
 
         output = Dense(1, activation='sigmoid', name="Sigmoid")(x)
-        model = Model(inputs=[img_features, text_features], outputs=output, name=self.name)
+        model = Model(inputs=[img_features, text_features],
+                      outputs=output, name=self.name)
 
         optimizer = Adam(learning_rate=self.learning_rate)
 
@@ -42,6 +45,7 @@ class MNNEM(object):
         self.model = model
         # print("MNN-EM model built: ")
         # self.model.summary()
+
 
 class _MNNEMHead(object):
     def __init__(self, img_input_size, txt_input_size, img_fc_layers, txt_fc_layers, extended, char_cnn):
@@ -55,33 +59,39 @@ class _MNNEMHead(object):
 
     def _build_model(self):
         # Text Input
-        img_features = Input(shape=(self.img_input_size), name="Image_Input_Head_Outer")
+        img_features = Input(shape=(self.img_input_size),
+                             name="Image_Input_Head_Outer")
 
-        img_cnn = _CNNBranch(self.img_input_size, self.img_fc_layers, self.extended, name="Image")
+        img_cnn = _CNNBranch(self.img_input_size,
+                             self.img_fc_layers, self.extended, name="Image")
 
         output_img = img_cnn.model(img_features)
 
-
         # Image Input
-        text_features = Input(shape=(self.txt_input_size), name="Text_Input_Head_Outer")
-    
+        text_features = Input(shape=(self.txt_input_size),
+                              name="Text_Input_Head_Outer")
+
         x = self.char_cnn(text_features)
 
-        text_branch = _CNNBranch(x.shape[1], self.txt_fc_layers, self.extended, name="Text")
+        text_branch = _CNNBranch(
+            x.shape[1], self.txt_fc_layers, self.extended, name="Text")
 
         output_text_branch = text_branch.model(x)
 
-        text_cnn = Model(inputs=text_features, outputs=output_text_branch, name="Text_CNN")
+        text_cnn = Model(inputs=text_features,
+                         outputs=output_text_branch, name="Text_CNN")
 
         output_text = text_cnn(text_features)
 
         # Element-wise product
         combined = Multiply(
             name="Element-wise_Multiplication")([output_img, output_text])
-        
-        model = Model(inputs=[img_features, text_features], outputs=combined, name="MNN_EM_Head")
+
+        model = Model(inputs=[img_features, text_features],
+                      outputs=combined, name="MNN_EM_Head")
 
         self.model = model
+
 
 class _CNNBranch(object):
     def __init__(self, input_size, fc_layers, extended, name):
@@ -93,13 +103,14 @@ class _CNNBranch(object):
 
     def _build_model(self):
         # Input Layer
-        features = Input(shape=(self.input_size), name=f"{self.name}_Input_Head_Inner")
+        features = Input(shape=(self.input_size),
+                         name=f"{self.name}_Input_Head_Inner")
 
         # fc + ReLU
         for i, fl in enumerate(self.fc_layers[:None if self.extended else -1], 1):
             x = Dense(fl, activation='relu',
                       name=f"{self.name}_FC_{i}")(features if i == 1 else x)
-            
+
         if not self.extended:
             # fc + L2 Norm
             x = Dense(
@@ -135,23 +146,27 @@ class ExtendedMNNEM(object):
             name="MNN_EM_Tail")
 
         # Input Layer
-        img_features = Input(shape=(self.head_1_config["img_input_size"]), name="Image_Input")
+        img_features = Input(
+            shape=(self.head_1_config["img_input_size"]), name="Image_Input")
 
         # Input Layer
-        text_features = Input(shape=(self.head_1_config["txt_input_size"]), name="Text_Input")
+        text_features = Input(
+            shape=(self.head_1_config["txt_input_size"]), name="Text_Input")
 
         # Input Layer
-        text_2_features = Input(shape=(self.head_2_config["txt_input_size"]), name="Text_2_Input")
+        text_2_features = Input(
+            shape=(self.head_2_config["txt_input_size"]), name="Text_2_Input")
 
         x = head.model([img_features, text_features])
 
         x = tail.model([x, text_2_features])
 
-        model = Model(inputs=[img_features, text_features, text_2_features], outputs=x, name="Extended_MNN_EM")
+        model = Model(inputs=[img_features, text_features,
+                      text_2_features], outputs=x, name="Extended_MNN_EM")
 
         optimizer = Adam(learning_rate=self.learning_rate)
 
         model.compile(optimizer=optimizer, loss=self.loss,
                       metrics=self.metrics)
-        
+
         self.model = model
