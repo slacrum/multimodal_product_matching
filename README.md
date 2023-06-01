@@ -49,3 +49,12 @@ In general, all the notebooks provided are standalone and may be run separately.
     1. [Base MNN-EM](./notebooks/experiments/mnn_em.ipynb) (Multimodal Neural Network with Element-wise Multiplication)
     2. [Extended MNN-EM](./notebooks/experiments/extended_mnn_em.ipynb)
 3. [Visualizing results](./notebooks/visualize_results.ipynb), such as ROC curve, Precision Recall curve and perform threshold optimization
+
+# Todos
+* Implement MNN-BTL (Multimodal Neural Network with Bidirectional Triplet Loss)
+* create main scripts `train.py` and `eval.py`
+* [utils/img_processing.py](./utils/img_processing.py): use `tf.keras.utils.image_dataset_from_directory` instead of `ImageDataGenerator`
+* [utils/text_processing.py](./utils/text_processing.py): use `TextVectorization` layer instead of `Tokenizer`
+* Acquire permission of Falzone et al to upload their model
+* Ablation studies on text embeddings (Word2Vec, GloVe, BERT)
+* Experiments on [MSCOCO](https://cocodataset.org/) and [Flickr30k](https://www.kaggle.com/datasets/hsankesara/flickr-image-dataset)
