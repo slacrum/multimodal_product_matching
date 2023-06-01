@@ -29,7 +29,7 @@ This is the code implementation of "Similarity Learning of Product Descriptions 
     ├──runs                             # default location for experiment outputs
     |
     ├──utils                            # Utilities and convenience functions
-    │  ├──eval.py                       # Evaluation-related functions (generate callbacks, plot and save metrics,...)
+    │  ├──metrics.py                    # Evaluation-related functions (generate callbacks, plot and save loss and metrics,...)
     │  ├──img_processing.py             # Generate image embeddings with CNNs
     │  └──text_processing.py            # Tokenize texts and create embedding weights
     │
