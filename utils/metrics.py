@@ -19,7 +19,9 @@ def create_metrics(metric_list):
             if metric in metrics_dict]
 
 
-def create_callbacks(callbacks_list, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls, min_delta=0.0001, patience=3):
+def create_callbacks(
+        callbacks_list, log_dir, model_name, img_model_name, optimizer_name,
+        learning_rate, cls, min_delta=0.0001, patience=3):
     callbacks_dict = {
         "early_stopping": EarlyStopping(
             monitor='val_loss',
@@ -54,7 +56,9 @@ def create_callbacks(callbacks_list, log_dir, model_name, img_model_name, optimi
             if callback in callbacks_dict]
 
 
-def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, learning_rate, cls):
+def plot_metrics(
+        history, metrics, model_name, img_model_name, optimizer_name,
+        learning_rate, cls):
     metrics = ["loss"] + metrics
     for metric in metrics:
         plt.plot(history[metric])
@@ -67,18 +71,20 @@ def plot_metrics(history, metrics, model_name, img_model_name, optimizer_name, l
         plt.show()
 
 
-def evaluate(model, x, labels_test, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls):
+def evaluate(
+        model, x, labels_test, log_dir, model_name, img_model_name,
+        optimizer_name, learning_rate, cls):
     model.evaluate(x, labels_test, batch_size=1)
 
     results = model.predict(x)
 
-    np.save(f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
-            np.array([
-                roc_curve(labels_test, results),
-                precision_recall_curve(labels_test, results),
-                labels_test,
-                results
-            ], dtype=object))
+    np.save(
+        f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
+        np.array(
+            [roc_curve(labels_test, results),
+             precision_recall_curve(labels_test, results),
+             labels_test, results],
+            dtype=object))
 
 
 def extract_metrics_config(config):
@@ -93,7 +99,9 @@ def extract_metrics_config(config):
 
 
 class Metric(object):
-    def __init__(self, log_dir, model_name, img_model_name, optimizer_name, learning_rate, cls):
+    def __init__(
+            self, log_dir, model_name, img_model_name, optimizer_name,
+            learning_rate, cls):
         self.log_dir = log_dir
         self.model_name = model_name
         self.img_model_name = img_model_name
@@ -111,9 +119,11 @@ class Metric(object):
         roc = plt.plot(
             self.metrics[0][0],
             self.metrics[0][1],
-            label="%s | %s | lr: %s (%s) | cls > %s (AUC = %0.3f)" % (self.model_name, self.img_model_name,
-                                                                      self.learning_rate, self.optimizer_name, self.cls, auc(self.metrics[0][0], self.metrics[0][1]))
-        )
+            label="%s | %s | lr: %s (%s) | cls > %s (AUC = %0.3f)" %
+            (self.model_name, self.img_model_name, self.learning_rate, self.
+             optimizer_name, self.cls,
+             auc(self.metrics[0][0],
+                 self.metrics[0][1])))
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.xlabel("False Positive Rate (FPR)")
         plt.ylabel("True Positive Rate (TPR)")
@@ -123,9 +133,11 @@ class Metric(object):
         prc = plt.plot(
             self.metrics[1][1],
             self.metrics[1][0],
-            label="%s | %s | lr: %s (%s) | cls > %s (AP = %0.3f)" % (self.model_name, self.img_model_name,
-                                                                     self.learning_rate, self.optimizer_name, self.cls, auc(self.metrics[1][1], self.metrics[1][0]))
-        )
+            label="%s | %s | lr: %s (%s) | cls > %s (AP = %0.3f)" %
+            (self.model_name, self.img_model_name, self.learning_rate, self.
+             optimizer_name, self.cls,
+             auc(self.metrics[1][1],
+                 self.metrics[1][0])))
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.xlabel("Recall")
         plt.ylabel("Precision")

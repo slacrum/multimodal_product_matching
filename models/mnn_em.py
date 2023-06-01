@@ -6,7 +6,10 @@ from models.char_cnn_zhang import CharCNNZhang
 
 
 class MNNEM(object):
-    def __init__(self, head_config, char_cnn, combined_fc_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy', name="MNN_EM") -> None:
+    def __init__(
+            self, head_config, char_cnn, combined_fc_layers, learning_rate,
+            metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"],
+            loss='binary_crossentropy', name="MNN_EM") -> None:
         self.head_config = head_config
         self.char_cnn = char_cnn
         self.combined_fc_layers = combined_fc_layers
@@ -48,7 +51,8 @@ class MNNEM(object):
 
 
 class _MNNEMHead(object):
-    def __init__(self, img_input_size, txt_input_size, img_fc_layers, txt_fc_layers, extended, char_cnn):
+    def __init__(self, img_input_size, txt_input_size, img_fc_layers,
+                 txt_fc_layers, extended, char_cnn):
         self.img_input_size = img_input_size
         self.txt_input_size = txt_input_size
         self.img_fc_layers = img_fc_layers
@@ -107,14 +111,18 @@ class _CNNBranch(object):
                          name=f"{self.name}_Input_Head_Inner")
 
         # fc + ReLU
-        for i, fl in enumerate(self.fc_layers[:None if self.extended else -1], 1):
+        for i, fl in enumerate(
+                self.fc_layers[: None if self.extended else -1],
+                1):
             x = Dense(fl, activation='relu',
                       name=f"{self.name}_FC_{i}")(features if i == 1 else x)
 
         if not self.extended:
             # fc + L2 Norm
             x = Dense(
-                self.fc_layers[-1], kernel_regularizer='l2', name=f"{self.name}_FC_last")(features if len(self.fc_layers) == 1 else x)
+                self.fc_layers[-1],
+                kernel_regularizer='l2', name=f"{self.name}_FC_last")(
+                features if len(self.fc_layers) == 1 else x)
 
         output = BatchNormalization(name=f"{self.name}_Batch_Normalization")(x)
 
@@ -124,7 +132,11 @@ class _CNNBranch(object):
 
 
 class ExtendedMNNEM(object):
-    def __init__(self, head_1_config, head_2_config, char_cnn, combined_fc_layers, learning_rate, metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"], loss='binary_crossentropy') -> None:
+    def __init__(self, head_1_config, head_2_config, char_cnn,
+                 combined_fc_layers, learning_rate,
+                 metrics=["recall", "precision", "binary_accuracy",
+                          "cosine_similarity"],
+                 loss='binary_crossentropy') -> None:
         self.head_1_config = head_1_config
         self.head_2_config = head_2_config
         self.char_cnn = char_cnn

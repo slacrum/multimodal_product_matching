@@ -13,10 +13,13 @@ class ABO(Dataset):
     as described in Collins et al., 2022 (https://arxiv.org/abs/2110.06199)
     """
 
-    def __init__(self, path, urls=[
-        "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-listings.tar",
-        "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-images-small.tar"
-    ], download=True, extract=True, preprocess=True, alt_augment=False, random_deletion=True, export_csv=True):
+    def __init__(
+            self, path,
+            urls=[
+                "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-listings.tar",
+                "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-images-small.tar"],
+            download=True, extract=True, preprocess=True, alt_augment=False,
+            random_deletion=True, export_csv=True):
         self.alt_augment = alt_augment
         super().__init__(path, urls, download, extract,
                          preprocess, random_deletion, export_csv)
@@ -26,7 +29,11 @@ class ABO(Dataset):
             return pd.read_csv(f)
 
     def _load_txts(self):
-        if not (os.path.exists(os.path.join(self.path, "listings/listings.csv.gz")) or os.path.exists(os.path.join(self.path, "listings/listings.csv"))):
+        if not (
+            os.path.exists(
+                os.path.join(self.path, "listings/listings.csv.gz"))
+            or os.path.exists(
+                os.path.join(self.path, "listings/listings.csv"))):
             print("Merging listings... (this may take a while)")
             json_pattern = os.path.join(
                 self.path, 'listings/metadata/listings_*.json.gz')
@@ -79,8 +86,9 @@ class ABO(Dataset):
             dfs = pd.concat([dfs, dfs_3])
             dfs.reset_index(drop=True, inplace=True)
 
-        dfs = dfs.loc[(dfs['item_name.language_tag'] == "en_US") | (
-            dfs['item_name.language_tag'] == "en_GB") | (dfs['item_name.language_tag'] == "en_IN")]
+        dfs = dfs.loc[(dfs['item_name.language_tag'] == "en_US") |
+                      (dfs['item_name.language_tag'] == "en_GB") |
+                      (dfs['item_name.language_tag'] == "en_IN")]
         dfs.reset_index(drop=True, inplace=True)
 
         dfs["product_type"] = dfs["product_type.value"]

@@ -8,7 +8,8 @@ from tqdm import tqdm
 
 
 class Dataset:
-    def __init__(self, path, urls, download, extract, preprocess, random_deletion, export_csv):
+    def __init__(self, path, urls, download, extract, preprocess,
+                 random_deletion, export_csv):
         self.path = path
         if download:
             self.urls = urls
@@ -85,8 +86,10 @@ class Dataset:
             "description", "description2", "path", "label", "product_type"]]
 
         print("Finishing up...")
-        dataset_final = dataset_final.drop(np.where(
-            (dataset_final['description'] == '') | (dataset_final['description2'] == ''))[0])
+        dataset_final = dataset_final.drop(
+            np.where(
+                (dataset_final['description'] == '') |
+                (dataset_final['description2'] == ''))[0])
         dataset_final["description"] = dataset_final["description"].str.lower()
         dataset_final["description2"] = dataset_final["description2"].str.lower()
         dataset_final["description"] = dataset_final['description'].str.replace(
