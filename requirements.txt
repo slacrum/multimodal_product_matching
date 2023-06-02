@@ -1,5 +1,5 @@
 tensorflow == 2.8.*
-pandas
+pandas < 2.0.0
 scikit-learn
 scipy
 matplotlib
