@@ -1,14 +1,14 @@
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense, Multiply, BatchNormalization
+from tensorflow.keras.layers import Input, Dense, Multiply, BatchNormalization, Lambda
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.metrics import Recall, Precision, BinaryAccuracy, CosineSimilarity
-from models.char_cnn_zhang import CharCNNZhang
+from tensorflow.math import l2_normalize
 
 
 class MNNEM(object):
     def __init__(
             self, head_config, char_cnn, combined_fc_layers, learning_rate,
-            metrics=["recall", "precision", "binary_accuracy", "cosine_similarity"],
+            metrics=["recall", "precision",
+                     "binary_accuracy", "cosine_similarity"],
             loss='binary_crossentropy', name="MNN_EM") -> None:
         self.head_config = head_config
         self.char_cnn = char_cnn
@@ -67,7 +67,7 @@ class _MNNEMHead(object):
                              name="Image_Input_Head_Outer")
 
         img_cnn = _CNNBranch(self.img_input_size,
-                             self.img_fc_layers, self.extended, name="Image")
+                             self.img_fc_layers, self.extended, False, name="Image")
 
         output_img = img_cnn.model(img_features)
 
@@ -78,7 +78,7 @@ class _MNNEMHead(object):
         x = self.char_cnn(text_features)
 
         text_branch = _CNNBranch(
-            x.shape[1], self.txt_fc_layers, self.extended, name="Text")
+            x.shape[1], self.txt_fc_layers, self.extended, False, name="Text")
 
         output_text_branch = text_branch.model(x)
 
@@ -98,10 +98,11 @@ class _MNNEMHead(object):
 
 
 class _CNNBranch(object):
-    def __init__(self, input_size, fc_layers, extended, name):
+    def __init__(self, input_size, fc_layers, extended, triplet_model, name):
         self.input_size = input_size
         self.fc_layers = fc_layers
         self.extended = extended
+        self.triplet_model = triplet_model
         self.name = name
         self._build_model()  # builds self.model variable
 
@@ -124,7 +125,12 @@ class _CNNBranch(object):
                 kernel_regularizer='l2', name=f"{self.name}_FC_last")(
                 features if len(self.fc_layers) == 1 else x)
 
-        output = BatchNormalization(name=f"{self.name}_Batch_Normalization")(x)
+        if self.triplet_model:
+            output = Lambda(lambda x: l2_normalize(x, axis=1),
+                            name=f"{self.name}_L2_Norm")(x)
+        else:
+            output = BatchNormalization(
+                name=f"{self.name}_Batch_Normalization")(x)
 
         model = Model(inputs=features, outputs=output, name=f"{self.name}_CNN")
 

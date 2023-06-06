@@ -1,0 +1,3 @@
+[submodule "models/addons"]
+	path = models/addons
+	url = git@github.com:SimuIacrum/addons.git

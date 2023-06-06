@@ -1,6 +1,7 @@
 import numpy as np
 from tensorflow.keras.metrics import Recall, Precision, BinaryAccuracy, CosineSimilarity, binary_accuracy
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
+from tensorflow.keras.losses import cosine_similarity
 from tensorflow import reduce_mean
 from matplotlib import pyplot as plt
 from sklearn.metrics import roc_curve, auc, precision_recall_curve
@@ -73,10 +74,18 @@ def plot_metrics(
 
 def evaluate(
         model, x, labels_test, log_dir, model_name, img_model_name,
-        optimizer_name, learning_rate, cls):
+        optimizer_name, learning_rate, cls, triplet_model=False):
     model.evaluate(x, labels_test, batch_size=1)
 
     results = model.predict(x)
+
+    if triplet_model:
+        img_predictions = results[:, :results.shape[1]//2]
+        text_predictions = results[:, results.shape[1]//2:results.shape[1]]
+        results = cosine_similarity(
+            img_predictions, text_predictions
+        ).numpy().reshape(-1, 1)
+        results = -results
 
     np.save(
         f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
