@@ -1,3 +1,6 @@
 [submodule "models/addons"]
 	path = models/addons
 	url = git@github.com:SimuIacrum/addons.git
+[submodule "data_loader/cocoapi"]
+	path = data_loader/cocoapi
+	url = git@github.com:cocodataset/cocoapi.git
