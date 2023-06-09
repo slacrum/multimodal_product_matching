@@ -1,0 +1,84 @@
+{
+  "data": {
+    "alphabet": "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
+    "input_size": 1014,
+    "cls": 0,
+    "path": "../../datasets/flickr30k_images"
+  },
+  "char_cnn_zhang": {
+    "conv_layers": [
+      [
+        256,
+        7,
+        3
+      ],
+      [
+        256,
+        7,
+        3
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        -1
+      ],
+      [
+        256,
+        3,
+        3
+      ]
+    ],
+    "fc_layers": [
+      1024,
+      1024
+    ],
+    "output_size": 2048
+  },
+  "img_model": "MobilenetV3small",
+  "model": {
+    "name": "Extended_MNN_EM_Flickr30k",
+    "img_1_fc_layers": 
+    [
+       1024
+    ],
+    "txt_1_fc_layers": 
+    [
+       1024
+    ],
+    "txt_2_fc_layers": 
+    [
+       1024,
+       512
+    ],
+    "combined_1_fc_layers": 
+    [
+       512
+    ],
+    "combined_2_fc_layers": 
+    [
+       512,
+       256
+    ],
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.00001,
+      "epochs": 10,
+      "batch_size": 16,
+      "test_split": 0.1,
+      "validation_split": 0.1,
+      "metrics": ["recall", "precision", "binary_accuracy", "cosine_similarity"],
+      "callbacks": ["early_stopping", "model_checkpoint", "tensorboard"],
+      "log_dir": "./runs"
+    }
+  }
+}
