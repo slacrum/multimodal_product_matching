@@ -1,4 +1,6 @@
 tensorflow == 2.8.*
+tensorflow-hub
+tensorflow-text == 2.8.*
 tensorflow-addons == 0.18.0
 pandas < 2.0.0
 scikit-learn
