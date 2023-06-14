@@ -9,3 +9,4 @@ matplotlib
 tqdm
 Pillow
 kaggle
+gensim
