@@ -59,4 +59,3 @@ In general, all the notebooks provided are standalone and may be run separately.
 * [utils/img_processing.py](./utils/img_processing.py): use `tf.keras.utils.image_dataset_from_directory` instead of `ImageDataGenerator`
 * [utils/text_processing.py](./utils/text_processing.py): use `TextVectorization` layer instead of `Tokenizer`
 * Acquire permission of Falzone et al to upload their model
-* Ablation studies on text embeddings (Word2Vec, GloVe, BERT)
