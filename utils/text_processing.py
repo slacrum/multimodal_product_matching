@@ -4,12 +4,13 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 class CharTokenizer(Tokenizer):
-    def __init__(self, alphabet, num_words=None, char_level=True,
+    def __init__(self, alphabet, input_size=1014, num_words=None, char_level=True,
                  oov_token='UNK'):
         super(CharTokenizer, self).__init__(num_words=num_words,
                                             char_level=char_level, oov_token=oov_token)
         # construct a new vocabulary
         self.alphabet = alphabet
+        self.input_size = input_size
         self.char_dict = {}
         for i, char in enumerate(self.alphabet):
             self.char_dict[char] = i + 1
@@ -24,7 +25,7 @@ class CharTokenizer(Tokenizer):
         # Convert string to index
         sequences = self.texts_to_sequences(text)
         # Padding
-        text = pad_sequences(sequences, maxlen=1014, padding='post')
+        text = pad_sequences(sequences, maxlen=self.input_size, padding='post')
         # Convert to numpy array
         text = np.array(text, dtype='float32')
         return text

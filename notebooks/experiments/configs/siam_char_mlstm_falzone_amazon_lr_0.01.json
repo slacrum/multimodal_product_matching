@@ -1,0 +1,23 @@
+{
+  "data": {
+    "alphabet": "abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
+    "input_size": 70,
+    "cls": 1,
+    "path": "../../datasets/abo"
+  },
+  "img_model": ".",
+  "model": {
+    "name": "Siamaese_Char_MLSTM_Falzone_ABO",
+    "training": {
+      "optimizer": "Adam",
+      "learning_rate": 0.01,
+      "epochs": 10,
+      "batch_size": 16,
+      "test_split": 0.1,
+      "validation_split": 0.1,
+      "metrics": ["recall", "precision", "binary_accuracy", "cosine_similarity"],
+      "callbacks": ["early_stopping", "model_checkpoint", "tensorboard"],
+      "log_dir": "./runs"
+    }
+  }
+}
