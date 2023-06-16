@@ -1,41 +1,35 @@
 import numpy as np
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import TextVectorization
 
 
-class CharTokenizer(Tokenizer):
-    def __init__(self, alphabet, input_size=1014, num_words=None, char_level=True,
-                 oov_token='UNK'):
-        super(CharTokenizer, self).__init__(num_words=num_words,
-                                            char_level=char_level, oov_token=oov_token)
-        # construct a new vocabulary
-        self.alphabet = alphabet
-        self.input_size = input_size
-        self.char_dict = {}
-        for i, char in enumerate(self.alphabet):
-            self.char_dict[char] = i + 1
-
-        # Use char_dict to replace the tk.word_index
-        self.word_index = self.char_dict.copy()
-        # Add 'UNK' to the vocabulary
-        self.word_index[self.oov_token] = max(self.char_dict.values()) + 1
+class CharTokenizer(TextVectorization):
+    def __init__(
+            self,
+            alphabet,                           # equal to legacy Tokenizer.filters
+            split="character",
+            output_sequence_length=1014,
+            standardize=None                    # we set to None because otherwise it would remove special characters
+    ):
+        super(
+            CharTokenizer, self).__init__(
+            split=split,
+            output_sequence_length=output_sequence_length,
+            standardize=standardize
+        )
 
     def tokenize(self, text):
-        self.fit_on_texts(text)
-        # Convert string to index
-        sequences = self.texts_to_sequences(text)
-        # Padding
-        text = pad_sequences(sequences, maxlen=self.input_size, padding='post')
-        # Convert to numpy array
-        text = np.array(text, dtype='float32')
-        return text
+        # apart from one extra character '' (index 0) in the vocabulary,
+        # the resulting text vectors are practically the same as in legacy Tokenizer class
+        self.adapt(text)
+        self.word_index = self.get_vocabulary()     # equal to legacy Tokenizer.word_index
+        return self(text)
 
     def create_embedding_weights(self):
         embedding_weights = []
-        embedding_weights.append(np.zeros(len(self.word_index)))
+        embedding_weights.append(np.zeros(self.vocabulary_size()))
 
-        for char, i in self.word_index.items():         # from index 1 to 69
-            onehot = np.zeros(len(self.word_index))
+        for i in range(self.vocabulary_size()):         # from index 1 to 70
+            onehot = np.zeros(self.vocabulary_size())
             onehot[i-1] = 1
             embedding_weights.append(onehot)
         return np.array(embedding_weights)
