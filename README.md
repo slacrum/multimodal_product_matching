@@ -56,4 +56,3 @@ In general, all the notebooks provided are standalone and may be run separately.
 
 # Todos
 * create main scripts `train.py` and `eval.py`
-* [utils/img_processing.py](./utils/img_processing.py): use `tf.keras.utils.image_dataset_from_directory` instead of `ImageDataGenerator`
