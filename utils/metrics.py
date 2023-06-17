@@ -5,6 +5,7 @@ from tensorflow.keras.losses import cosine_similarity
 from tensorflow import reduce_mean
 from matplotlib import pyplot as plt
 from sklearn.metrics import roc_curve, auc, precision_recall_curve
+from utils.img_processing import load_img_model
 
 
 def create_metrics(metric_list):
@@ -87,12 +88,16 @@ def evaluate(
         ).numpy().reshape(-1, 1)
         results = -results
 
+    total_params = load_img_model(img_model_name).count_params() + model.count_params()
+
     np.save(
         f'{log_dir}/logs/{model_name}/cls_{cls}/{img_model_name}/{optimizer_name}/lr_{learning_rate}/metrics',
         np.array(
             [roc_curve(labels_test, results),
              precision_recall_curve(labels_test, results),
-             labels_test, results],
+             labels_test, results,
+             model.count_params(),
+             total_params],
             dtype=object))
 
 
@@ -170,7 +175,7 @@ class Metric(object):
         return fscores
 
     def _accuracy(self, mode):
-        roc, prc, y_true, y_pred = self.metrics
+        roc, prc, y_true, y_pred, *_ = self.metrics
         if mode == "gmean":
             metric = self._gmean()
             threshold = roc[2][np.argmax(metric)]
@@ -192,8 +197,12 @@ class Metric(object):
         precision, recall = self.metrics[1][0][np.argmax(
             self._fscore())], self.metrics[1][1][np.argmax(self._fscore())]
         fscore_best, threshold_fscore, acc_fscore = self._accuracy("fscore")
+        model_params = self.metrics[4]
+        total_params = self.metrics[5]
         return {'Model name': self.model_name,
                 'Image CNN': self.img_model_name,
+                '# Parameters (without Image CNN)': model_params,
+                'Total parameters': total_params,
                 'Optimizer': self.optimizer_name,
                 'lr': self.learning_rate,
                 'cls': self.cls,
