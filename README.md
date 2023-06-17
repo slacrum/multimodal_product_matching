@@ -47,12 +47,9 @@ pip install -r requirements.txt
 
 # Get started
 In general, all the notebooks provided are standalone and may be run separately. However, we still recommend the following order:
-1. [Data Preparation](./notebooks/data_preparation.ipynb), to gain understanding of the ABO data and necessary processing
+1. [Data Preparation](./notebooks/data_preparation_amazon.ipynb), to gain understanding of the ABO data and necessary processing
 2. Experiments for running our ML pipeline:
-    1. [Base MNN-EM](./notebooks/experiments/mnn_em.ipynb) (Multimodal Neural Network with Element-wise Multiplication)
-    2. [Extended MNN-EM](./notebooks/experiments/extended_mnn_em.ipynb) (3 inputs)
-    3. [MNN-BTL](./notebooks/experiments/mnn_btl.ipynb) (Multimodal Neural Network with Bidirectional Triplet Loss)
-3. [Visualizing results](./notebooks/visualize_results.ipynb), such as ROC curve, Precision Recall curve and perform threshold optimization
-
-# Todos
-* create main scripts `train.py` and `eval.py`
+    1. [Base MNN-EM](./notebooks/experiments/mnn_em_amazon.ipynb) (Multimodal Neural Network with Element-wise Multiplication)
+    2. [Extended MNN-EM](./notebooks/experiments/extended_mnn_em_amazon.ipynb) (3 inputs)
+    3. [MNN-BTL](./notebooks/experiments/mnn_btl_amazon.ipynb) (Multimodal Neural Network with Bidirectional Triplet Loss)
+3. [Visualizing results](./notebooks/visualize_results_amazon.ipynb), such as ROC curve, Precision Recall curve and perform threshold optimization
