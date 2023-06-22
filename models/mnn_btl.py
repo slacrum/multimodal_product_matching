@@ -6,10 +6,16 @@ from models.addons.tensorflow_addons.losses import triplet_multimodal
 
 
 class MNNBTL(object):
-    def __init__(self, head_config, char_cnn, learning_rate, name="MNN_BTL"):
+    def __init__(self, head_config, char_cnn, learning_rate, margin=1.0,
+                 lambda_1=0.05,
+                 lambda_2=0.05, mining="hard", name="MNN_BTL"):
         self.head_config = head_config
         self.char_cnn = char_cnn
         self.learning_rate = learning_rate
+        self.margin = margin
+        self.lambda_1 = lambda_1
+        self.lambda_2 = lambda_2
+        self.mining = mining
         self.name = name
         self._build_model()  # builds self.model variable
 
@@ -18,8 +24,11 @@ class MNNBTL(object):
         img_features = Input(shape=(self.head_config["img_input_size"]),
                              name="Image_Input_Head_Outer")
 
-        img_cnn = _CNNBranch(self.head_config["img_input_size"],
-                             self.head_config["img_fc_layers"], self.head_config["extended"], True, name="Image")
+        img_cnn = _CNNBranch(
+            self.head_config["img_input_size"],
+            self.head_config["img_fc_layers"],
+            self.head_config["extended"],
+            True, name="Image")
 
         # Image Input
         text_features = Input(shape=(self.head_config["txt_input_size"]),
@@ -27,8 +36,11 @@ class MNNBTL(object):
 
         x = self.char_cnn(text_features)
 
-        text_branch = _CNNBranch(x.shape[1],
-                                 self.head_config["txt_fc_layers"], self.head_config["extended"], True, name="Text")
+        text_branch = _CNNBranch(
+            x.shape[1],
+            self.head_config["txt_fc_layers"],
+            self.head_config["extended"],
+            True, name="Text")
 
         output_text_branch = text_branch.model(x)
 
@@ -42,8 +54,13 @@ class MNNBTL(object):
 
         optimizer = Adam(learning_rate=self.learning_rate)
 
-        loss = triplet_multimodal.MultimodalTripletHardLossBidirectional(
-            distance_metric="angular")
+        if self.mining == "hard":
+            loss = triplet_multimodal.MultimodalTripletHardLossBidirectional(
+                distance_metric="angular", margin=self.margin,
+                lambda_1=self.lambda_1, lambda_2=self.lambda_2)
+        elif self.mining == "semihard":
+            loss = triplet_multimodal.MultimodalTripletSemihardLossBidirectional(
+                distance_metric="angular", margin=self.margin, lambda_1=self.lambda_1, lambda_2=self.lambda_2)
 
         # Compile the model
         model.compile(
