@@ -75,8 +75,8 @@ def plot_metrics(
 
 def evaluate(
         model, x, labels_test, log_dir, model_name, img_model_name,
-        optimizer_name, learning_rate, cls, triplet_model=False):
-    model.evaluate(x, labels_test, batch_size=1)
+        optimizer_name, learning_rate, cls, batch_size=1, triplet_model=False):
+    model.evaluate(x, labels_test, batch_size=batch_size)
 
     results = model.predict(x)
 
@@ -108,6 +108,8 @@ def extract_metrics_config(config):
         "img_model_name": config["img_model"],
         "optimizer_name": config["model"]["training"]["optimizer"],
         "learning_rate": config["model"]["training"]["learning_rate"],
+        "batch_size": config["model"]["training"]["batch_size"],
+        "epochs": config["model"]["training"]["epochs"],
         "cls": config["data"]["cls"]
     }
 
@@ -115,12 +117,14 @@ def extract_metrics_config(config):
 class Metric(object):
     def __init__(
             self, log_dir, model_name, img_model_name, optimizer_name,
-            learning_rate, cls):
+            learning_rate, batch_size, epochs, cls):
         self.log_dir = log_dir
         self.model_name = model_name
         self.img_model_name = img_model_name
         self.optimizer_name = optimizer_name
         self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.epochs = epochs
         self.cls = cls
         self._load_metric()
 
@@ -205,6 +209,8 @@ class Metric(object):
                 'Total parameters': total_params,
                 'Optimizer': self.optimizer_name,
                 'lr': self.learning_rate,
+                'Batch size': self.batch_size,
+                '# Epochs': self.epochs,
                 'cls': self.cls,
                 'AUC-ROC': auc(self.metrics[0][0], self.metrics[0][1]),
                 'AUC-PRC': auc(self.metrics[1][1], self.metrics[1][0]),

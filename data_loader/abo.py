@@ -2,9 +2,11 @@ import os
 import gzip
 import glob
 import pandas as pd
+import nltk
 from tqdm import tqdm
 from ast import literal_eval
 from data_loader.dataset import Dataset
+from utils.text_processing import replace_words_with_synonyms
 
 
 class ABO(Dataset):
@@ -18,9 +20,11 @@ class ABO(Dataset):
             urls=[
                 "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-listings.tar",
                 "https://amazon-berkeley-objects.s3.amazonaws.com/archives/abo-images-small.tar"],
-            download=True, extract=True, preprocess=True, alt_augment=False,
-            random_deletion=True, export_csv=True):
+            download=True, extract=True, preprocess=True, undersample=True, alt_augment=False,
+            txt_augment=False, random_deletion=True, export_csv=True):
+        self.undersample = undersample
         self.alt_augment = alt_augment
+        self.txt_augment = txt_augment
         super().__init__(path, urls, download, extract,
                          preprocess, random_deletion, export_csv)
 
@@ -77,6 +81,28 @@ class ABO(Dataset):
 
         dfs = dfs.drop(['Unnamed: 0'], axis=1)
 
+        if self.undersample:
+            print("Undersampling majority classes...")
+            majority_cls = dfs['product_type.value'].value_counts()[:5].index.tolist()
+            for cls in majority_cls:
+                dfs = self._undersample(dfs, cls)
+
+        if self.txt_augment:
+            print("Load necessary NLTK packages...")
+            nltk.download('wordnet')
+            nltk.download('punkt')
+            nltk.download('averaged_perceptron_tagger')
+
+            print("Performing text augmentation... this may take a few minutes")
+            dfs_augmented = dfs.copy()
+            dfs_augmented["item_keywords.value"] = dfs_augmented["item_keywords.value"].fillna(
+                "")
+            dfs_augmented["item_keywords.value"] = dfs_augmented["item_keywords.value"].apply(
+                lambda x: replace_words_with_synonyms(x, p=0.5, q=0.5))
+            dfs_augmented["item_name.value"] = dfs_augmented["item_name.value"].apply(
+                lambda x: replace_words_with_synonyms(x, p=0.5, q=0.5))
+            dfs = pd.concat([dfs, dfs_augmented])
+
         if self.alt_augment:
             print("Performing augmentation with alternative product images...")
             dfs["other_image_id"] = dfs["other_image_id"].fillna("[]")
@@ -97,3 +123,8 @@ class ABO(Dataset):
                    "item_name.value", "product_type", "main_image_id"]]
 
         return dfs
+
+    def _undersample(self, df, cls):
+        return pd.concat([df[df['product_type.value'] != cls],
+                          df[df['product_type.value'] == cls].sample(int(df['product_type.value'].value_counts().mean()))
+                          ]).reset_index(drop=True)

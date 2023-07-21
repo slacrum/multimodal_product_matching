@@ -10,3 +10,4 @@ tqdm
 Pillow
 kaggle
 gensim
+nltk
