@@ -26,17 +26,17 @@ def handle_args():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("config", help="JSON config")
-    parser.add_argument("--load_embeddings", action="store_true")
-    parser.add_argument("--save_embeddings", action="store_true")
-    parser.add_argument("--no_train", action="store_true", default=False)
-    parser.add_argument("--no_eval", action="store_true", default=False)
+    parser.add_argument("--save_embeddings", help="Save current embeddings and data for later reuse", action="store_true")
+    parser.add_argument("--load_embeddings", help="Load saved embeddings (requires `--save_embeddings` to have been enabled in a previous run)", action="store_true")
+    parser.add_argument("--no_train", help="Skip training (and evaluation, by extension)", action="store_true", default=False)
+    parser.add_argument("--no_eval", help="Skip evaluation", action="store_true", default=False)
     return parser.parse_args()
 
 
 def load_dataset(path):
     abo = ABO(path=path,
               download=True,
-              extract=False,
+              extract=True,
               preprocess=True,
               undersample=True,
               alt_augment=True,
